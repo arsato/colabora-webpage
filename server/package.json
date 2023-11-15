@@ -19,6 +19,7 @@
     "jsonwebtoken": "^9.0.2",
     "pg": "^8.11.3",
     "pg-format": "^1.0.4",
+    "sequelize": "^6.35.0",
     "supertest": "^6.3.3"
   },
   "devDependencies": {
