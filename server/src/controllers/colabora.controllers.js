@@ -1,5 +1,5 @@
 const db = require("../models");
-const User = db.models.User;
+const User = db.models.Users;
 
 exports.createUser = (req, res) => {
   if (!req.body.title) {

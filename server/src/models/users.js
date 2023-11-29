@@ -8,12 +8,12 @@ const getUserModel = (sequelize, { DataTypes }) => {
         autoIncrement: true,
       },
       firstName: {
-        field: "first_name",
+        field: "user_first_name",
         type: DataTypes.STRING,
         allowNull: false,
       },
       lastName: {
-        field: "last_name",
+        field: "user_last_name",
         type: DataTypes.STRING,
         allowNull: true,
       },
@@ -23,20 +23,26 @@ const getUserModel = (sequelize, { DataTypes }) => {
         unique: true,
         isEmail: true,
       },
-      password: {
+      user_password: {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      userRole: {
+      user_role: {
         field: "user_role",
-        type: DataTypes.ENUM("admin", "user"),
+        type: DataTypes.CHECK("admin", "user"),// SE USA CHECK AHORA EN postgres, no permite el Enum
         defaultValue: "user",
         allowNull: false,
-      },
+        validate:{
+          isIn:[['admin','user']]
+      }
+      }
     });
+   
   
     return User;
-  };
+  }
+;
+  
   
   module.exports = getUserModel;
   

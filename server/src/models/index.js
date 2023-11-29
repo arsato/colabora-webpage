@@ -1,5 +1,5 @@
 const Sequelize = require("sequelize");
-const getUserModel = require("./user");
+const getUserModel = require("./users");
 
 const sequelize = new Sequelize(
     process.env.DB_NAME,
@@ -13,6 +13,8 @@ const sequelize = new Sequelize(
 
 const models = {
     User: getUserModel(sequelize, Sequelize),
+    GeneralInformationPage: getGeneralInformationModel(sequelize,Sequelize),
+
 };
 
 module.exports = { sequelize, models}
