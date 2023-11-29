@@ -1,5 +1,5 @@
 const express = require("express");
-const colabora = require("../controllers/colabora.controllers");
+const colabora = require("../controllers/UserController");
 const router = express.Router();
 
 router.use(express.json());
