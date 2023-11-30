@@ -40,7 +40,7 @@ export default function Editor() {
     const endpoint = "/blog";
     try {
       const { data: blogPosts } = await axios.get(url + endpoint);
-      setReaderState(blogPosts[3].content);
+      setReaderState(blogPosts[0].content);
     } catch (error) {
       console.log(error);
     } finally {

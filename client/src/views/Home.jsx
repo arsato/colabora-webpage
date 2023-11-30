@@ -1,6 +1,3 @@
-import Editor from "../lexical/Editor";
-import Reader from "../lexical/Reader";
-
 const Home = () => {
   return (
     <main className="">
