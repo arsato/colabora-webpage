@@ -1,11 +1,16 @@
+import Editor from "../lexical/Editor";
+import Reader from "../lexical/Reader";
+
 const Home = () => {
   return (
-    <main className="">
-      <div className="container mx-auto">
-        <h2 className="flex justify-center text-5xl font-bold">Buenos días a todos</h2>
-      </div>
-    </main>
-  )
-}
+    <main className="flex flex-col justify-center items-center">
+        <h2 className="text-5xl font-bold">
+          Buenos días a todos
+        </h2>
 
-export default Home
+        <Reader />
+    </main>
+  );
+};
+
+export default Home;
