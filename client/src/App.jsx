@@ -6,7 +6,6 @@ import Team from "./views/Team";
 import Blog from "./views/Blog";
 import Services from "./views/Services";
 import Contact from "./views/Contact";
-
 import './App.css'
 
 const App = () => {
