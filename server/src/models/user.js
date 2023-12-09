@@ -20,12 +20,15 @@ const getUserModel = (sequelize, { DataTypes }) => {
     email: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
+      unique: {
+        arg: true,
+        msg: "Email already in use",
+      },
       validate: {
         isEmail: {
-          msg: "Please enter a valid mail address"
-        }
-      }
+          msg: "Please enter a valid mail address",
+        },
+      },
     },
     password: {
       type: DataTypes.STRING,
@@ -43,8 +46,9 @@ const getUserModel = (sequelize, { DataTypes }) => {
     User.hasOne(models.AdditionalInfo, {
       foreignKey: {
         name: "userId",
-        allowNull: false
-      }
+        field: "user_id",
+        allowNull: false,
+      },
     });
   };
 

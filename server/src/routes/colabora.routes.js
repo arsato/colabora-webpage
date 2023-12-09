@@ -12,11 +12,12 @@ module.exports = app => {
       });
     router.post("/users", colabora.createUser);
     router.get("/users", colabora.findAllUsers);
-    router.get("/users/:id", colabora.findUserAdditional);
+    router.get("/users/:id", colabora.findUserByPk);
+    //router.get("/users/:id", colabora.findUserAdditional);
     router.get("/additional", colabora.findAllAdditional)
     router.get("/blog", colabora.findAllBlogPosts);
-    router.post("/blog", validateToken, colabora.createBlogPost);
-    router.post("/upload", colabora.createUpload);
+    router.post("/blog", colabora.createBlogPost);
+    router.patch("/users/:id", colabora.updateAdditionalInfo);
     router.post("/login", colabora.loginVerify)
 
     app.use(router)

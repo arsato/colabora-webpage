@@ -1,37 +1,44 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import axios from "axios";
+import Context from "../Context";
 
 const UserForm = () => {
-  const [usuario, setUsuario] = useState({});
+  const { usuario, setUsuario: setUsuarioGlobal } = useContext(Context);
+  const [userData, setUserData] = useState({});
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [res, setRes] = useState({});
   const url = "http://localhost:3000";
 
-  const handleSetUsuario = ({ target: { value, name } }) => {
+  const handleSetUserData = ({ target: { value, name } }) => {
     const field = {};
     field[name] = value;
-    setUsuario({ ...usuario, ...field });
+    setUserData({ ...userData, ...field });
   };
 
   const handleUpload = async () => {
-    const endpoint = "/upload";
+    const endpoint = `/users/${usuario.userId}`;
+    const data = new FormData();
     if (file) {
-      const data = new FormData();
+      const imageId = usuario.additional_info.publicId;
       data.append("image", file);
-      data.append("github", usuario["github"]);
-      data.append("linkedin", usuario["linkedin"]);
-      data.append("position", usuario["position"]);
-      data.append("userId", usuario["userId"]);
-      try {
-        setLoading(true);
-        let res = await axios.post(url + endpoint, data);
-        setRes(res.data)
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setLoading(false);
-      }
+      data.append("imageId", imageId);
+    }
+    if(userData["github"])
+    data.append("github", `https://www.github.com/${userData["github"]}`);
+    if(userData["linkedin"])
+    data.append("linkedin", `https://www.linkedin.com/in/${userData["linkedin"]}`);
+    if(userData["position"])
+    data.append("position", userData["position"]);
+
+    try {
+      setLoading(true);
+      let res = await axios.patch(url + endpoint, data);
+      setRes(res.data);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -40,36 +47,27 @@ const UserForm = () => {
       <h1>UserForm</h1>
       <form onSubmit={(e) => e.preventDefault()} encType="multipart/form-data">
         <div className="flex flex-col">
-        <input
-            value={usuario.userId}
-            onChange={handleSetUsuario}
-            name="userId"
-            type="text"
-            id="userId"
-            placeholder="userId"
-            className="border border-gray-300 rounded-xl p-4 pl-6"
-          />
           <input
-            value={usuario.github}
-            onChange={handleSetUsuario}
+            value={userData.github}
+            onChange={handleSetUserData}
             name="github"
             type="text"
             id="github"
-            placeholder="Github"
+            placeholder="https://www.github.com/"
             className="border border-gray-300 rounded-xl p-4 pl-6"
           />
           <input
-            value={usuario.linkedin}
-            onChange={handleSetUsuario}
+            value={userData.linkedin}
+            onChange={handleSetUserData}
             name="linkedin"
             type="text"
             id="linkedin"
-            placeholder="Linkedin"
+            placeholder="https://www.linkedin.com/in/"
             className="border border-gray-300 rounded-xl p-4 pl-6"
           />
           <input
-            value={usuario.position}
-            onChange={handleSetUsuario}
+            value={userData.position}
+            onChange={handleSetUserData}
             name="position"
             type="text"
             id="position"
@@ -86,7 +84,7 @@ const UserForm = () => {
             type="submit"
             className="hover:cursor-pointer bg-green-400 hover:bg-green-600 font-medium rounded-xl text-white p-4 mt-5 hover:scale-[1.02] ease-in-out duration-300"
           >
-          {loading ? "Uploading..." : "Upload"}
+            {loading ? "Uploading..." : "Upload"}
           </button>
         </div>
       </form>

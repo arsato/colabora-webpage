@@ -37,7 +37,7 @@ const Team = () => {
       </div>
     <div className="mt-20 grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-12">
       {teamMember.map((member) => (
-        <TeamCard key={member.userId} name={member.firstName} position={member.position} github={member.github} linkedin={member.linkedin} id={member.userId} />
+        <TeamCard key={member.userId} name={member.firstName + member.lastName} id={member.userId} />
       ))}
       </div>
     </main>

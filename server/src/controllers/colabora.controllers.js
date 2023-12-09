@@ -1,6 +1,6 @@
 const { models } = require("../models");
 const bcrypt = require("bcryptjs");
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
 const { handleUpload } = require("../helpers/cloudinary");
 const User = models.User;
 const Blog = models.Blog;
@@ -17,8 +17,24 @@ exports.createUser = (req, res) => {
     password: encryptedPassword,
   };
 
+  console.log(user);
+
   User.create(user)
     .then((data) => {
+      const imageId =
+        user.email.substring(0, user.email.lastIndexOf("@")) + "_profile";
+      const info = {
+        userId: data.userId,
+        publicId: imageId,
+      };
+      AdditionalInfo.create(info).catch((err) => {
+        res.status(500).send({
+          message:
+            err.message ||
+            "Some error occurred while creating the Additional Information.",
+        });
+      });
+
       res.status(201).send(data);
     })
     .catch((err) => {
@@ -28,9 +44,9 @@ exports.createUser = (req, res) => {
     });
 };
 
-exports.findUserByEmail = (req, res) => {
-  const userEmail = req.body.email;
-  User.findOne({ where: { email: userEmail } })
+exports.findUserByPk = (req, res) => {
+  const userID = req.params.id;
+  User.findByPk(userID, { include: [AdditionalInfo] })
     .then((data) => {
       res.send(data);
     })
@@ -54,13 +70,10 @@ exports.loginVerify = async (req, res, next) => {
       user.password
     );
     if (password_valid) {
-      token = jwt.sign(
-        { userEmail},
-        process.env.TOKEN_SECRET
-      );
-      res.status(201).send({ token: token });
+      token = jwt.sign({ userEmail }, process.env.TOKEN_SECRET);
+      res.status(201).send({ token: token, id: user.userId });
     } else {
-      res.status(400).send({ error: "Incorrect Password" });
+      res.status(401).send({ error: "Incorrect Password" });
     }
   } else {
     res.status(404).send({ error: "User does not exist" });
@@ -83,7 +96,7 @@ exports.findUserAdditional = (req, res) => {
   const id = req.params.id;
   AdditionalInfo.findOne({ where: { userId: id } })
     .then((data) => {
-      console.log(data)
+      console.log(data);
       res.send(data);
     })
     .catch((err) => {
@@ -119,14 +132,14 @@ exports.findAllAdditional = (req, res) => {
     });
 };
 
-exports.createAdditionalInfo = (req, res) => {
+exports.createAdditionalInfo = async (req, res) => {
   const info = {
     position: req.body.position,
     github: req.body.github,
     linkedin: req.body.linkedin,
   };
 
-  AdditionalInfo.create(info)
+  await AdditionalInfo.create(info)
     .then((data) => {
       res.send(data);
     })
@@ -162,16 +175,20 @@ exports.createBlogPost = (req, res) => {
 };
 
 exports.createUpload = async (req, res) => {
-  try {
-    const b64 = Buffer.from(req.file.buffer).toString("base64");
-    let dataURI = "data:" + req.file.mimetype + ";base64," + b64;
-    var cloudinaryResponse = await handleUpload(dataURI);
-  } catch (error) {
-    console.log(error);
-    res.send({
-      message: error.message,
-    });
+  
+  if (req.file) {
+    try {
+      const b64 = Buffer.from(req.file.buffer).toString("base64");
+      let dataURI = "data:" + req.file.mimetype + ";base64," + b64;
+      var cloudinaryResponse = await handleUpload(dataURI, req.body.imageId);
+    } catch (error) {
+      console.log(error);
+      res.send({
+        message: error.message,
+      });
+    }
   }
+
   const info = {
     userId: req.body.userId,
     position: req.body.position,
@@ -189,6 +206,48 @@ exports.createUpload = async (req, res) => {
     .catch((err) => {
       res.status(500).send({
         message: err.message || "Some error occurred while creating the User.",
+      });
+    });
+};
+
+exports.updateAdditionalInfo = async (req, res) => {
+  const id = req.params.id;
+  var info = req.body
+  
+  if (req.file) {
+    try {
+      const b64 = Buffer.from(req.file.buffer).toString("base64");
+      let dataURI = "data:" + req.file.mimetype + ";base64," + b64;
+      var cloudinaryResponse = await handleUpload(dataURI, req.body.imageId);
+      info["publicId"] = cloudinaryResponse.public_id;
+      info["secureUrl"] = cloudinaryResponse.secure_url;
+    } catch (error) {
+      console.log(error);
+      res.send({
+        message: error.message,
+      });
+    }
+  }
+
+  console.log(info);
+  AdditionalInfo.update(info, {
+    where: { userId: id },
+  })
+    .then((data) => {
+      console.log(data);
+      if (data == 1) {
+        res.send({
+          message: "Additional info was updated successfully.",
+        });
+      } else {
+        res.send({
+          message: `Cannot update Additional Info with id=${id}. Maybe the User is not created or req.body is empty!`,
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: "Error updating Additional Info with userId=" + id,
       });
     });
 };
