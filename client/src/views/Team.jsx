@@ -1,6 +1,20 @@
+import { useEffect, useState } from "react";
 import TeamCard from "../components/TeamCard";
+import getData from "../utils/getData";
 
 const Team = () => {
+
+  const [teamMember, setTeamMember] = useState([]);
+
+  const url = "http://localhost:3000/users/";
+
+  useEffect(() => {
+   getData(url)
+      .then((data) => {
+        setTeamMember(data);
+      })
+  },[])
+
   return (
     <main className="flex flex-col justify-center items-center">
       <div className="relative h-[500px] w-full">
@@ -21,14 +35,10 @@ const Team = () => {
           </div>
         </div>
       </div>
-      <div className="mt-6 grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-        <TeamCard />
-        <TeamCard />
-        <TeamCard />
-        <TeamCard />
-        <TeamCard />
-        <TeamCard />
-        <TeamCard />
+    <div className="mt-20 grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-12">
+      {teamMember.map((member) => (
+        <TeamCard key={member.userId} name={member.firstName} position={member.position} github={member.github} linkedin={member.linkedin} id={member.userId} />
+      ))}
       </div>
     </main>
   );

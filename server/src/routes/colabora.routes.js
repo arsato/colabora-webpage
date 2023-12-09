@@ -1,12 +1,23 @@
 const express = require("express");
 const colabora = require("../controllers/colabora.controllers");
+const { validateToken } = require("../middleware/middleware");
 const router = express.Router();
+require("dotenv").config();
 
-router.use(express.json());
 
-router.post("/users", colabora.createUser);
-router.get("/users", colabora.findAllUsers);
-router.get("/blog", colabora.findAllBlogPosts);
-router.post("/blog", colabora.createBlogPost);
+module.exports = app => {
 
-module.exports = router;
+    router.get("/", (req, res) => {
+        res.json({ message: "Welcome to colabora backend v2" });
+      });
+    router.post("/users", colabora.createUser);
+    router.get("/users", colabora.findAllUsers);
+    router.get("/users/:id", colabora.findUserAdditional);
+    router.get("/additional", colabora.findAllAdditional)
+    router.get("/blog", colabora.findAllBlogPosts);
+    router.post("/blog", validateToken, colabora.createBlogPost);
+    router.post("/upload", colabora.createUpload);
+    router.post("/login", colabora.loginVerify)
+
+    app.use(router)
+}
