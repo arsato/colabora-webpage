@@ -43,7 +43,7 @@ const getUserModel = (sequelize, { DataTypes }) => {
   });
 
   User.associate = (models) => {
-    User.hasOne(models.AdditionalInfo, {
+    User.hasOne(models.ExtraInfo, {
       foreignKey: {
         name: "userId",
         field: "user_id",

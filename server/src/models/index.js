@@ -3,7 +3,7 @@ require("dotenv").config();
 
 const getUserModel = require("./user");
 const getBlogModel = require("./blog");
-const getAdditionalInfoModel = require("./additional-info");
+const getExtraInfoModel = require("./extra-info");
 
 const sequelize = new Sequelize(
   process.env.DB_NAME,
@@ -12,13 +12,14 @@ const sequelize = new Sequelize(
   {
     host: process.env.DB_HOST,
     dialect: process.env.DB_DIALECT,
+    logging: false
   }
 );
 
 const models = {
     User: getUserModel(sequelize, Sequelize),
     Blog: getBlogModel(sequelize, Sequelize),
-    AdditionalInfo: getAdditionalInfoModel(sequelize, Sequelize),
+    ExtraInfo: getExtraInfoModel(sequelize, Sequelize),
 };
 
 Object.keys(models).forEach((key) => {

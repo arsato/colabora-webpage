@@ -1,16 +1,16 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Navbar from "./components/Navbar";
-import Home from "./views/Home";
-import About from "./views/About";
-import Team from "./views/Team";
-import Blog from "./views/Blog";
-import Services from "./views/Services";
-import Contact from "./views/Contact";
-import './App.css'
-import LogInMain from "./views/LogInMain";
-import SignUpMain from "./views/SignUpMain";
-import Context from "./Context";
 import { useState } from "react";
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import './App.css';
+import Context from "./Context";
+import Navbar from "./components/Navbar";
+import About from "./views/About";
+import Blog from "./views/Blog";
+import Contact from "./views/Contact";
+import Home from "./views/Home";
+import LogInMain from "./views/LogInMain";
+import Services from "./views/Services";
+import SignUpMain from "./views/SignUpMain";
+import Team from "./views/Team";
 
 const App = () => {
   const [usuario, setUsuario] = useState(null)

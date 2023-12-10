@@ -1,39 +1,25 @@
-import React, { useEffect, useState } from "react";
-import getData from "../utils/getData";
-import CardSkeleton from "./CardSkeleton"
+import React from "react";
 
-const TeamCard = ({ id, name }) => {
-  const [additionalInfo, setAdditionalInfo] = useState([]);
-  const [loaded, setLoaded] = useState(false);
-
-  const url = "http://localhost:3000/users/";
-
-  useEffect(() => {
-    getData(url + id).then((data) => {
-      setLoaded(true);
-      setAdditionalInfo(data);
-    });
-  }, []);
+const TeamCard = ({ id, name, position, github, linkedin, image }) => {
 
   return (
     <div>
-      {loaded ? (
         <div className="flex flex-col justify-center items-center gap-3">
-          <div className="flex-col justify-start items-center gap-[23px] flex">
+          <div className="flex-col justify-start items-center gap-3 flex">
             <img
               className="w-[334px] h-[428px] rounded-[15px]"
-              src={additionalInfo.additional_info.secureUrl}
+              src={image}
             />
-            <div className="text-black text-3xl font-bold font-['Istok Web'] leading-7">
+            <div className="text-black text-[30px] font-bold leading-9">
               {name}
             </div>
-            <div className="text-black text-[25px] font-bold font-['Istok Web'] uppercase leading-normal">
-              {additionalInfo.additional_info.position}
+            <div className="text-black text-[25px] font-bold uppercase">
+              {position}
             </div>
           </div>
           <div className="justify-start items-start gap-3.5 inline-flex">
-            <a
-              href={additionalInfo.additional_info.github}
+            {github && <a
+              href={`https://www.github.com/${github}`}
               target="_blank"
               rel="noreferrer"
             >
@@ -41,9 +27,9 @@ const TeamCard = ({ id, name }) => {
                 className="w-[45px] h-[45px]"
                 src="/images/logos/githublogo.png"
               />
-            </a>
-            <a
-              href={additionalInfo.additional_info.linkedin}
+            </a>}
+            {linkedin && <a
+              href={`https://www.linkedin.com/in/${linkedin}`}
               target="_blank"
               rel="noreferrer"
             >
@@ -51,12 +37,10 @@ const TeamCard = ({ id, name }) => {
                 className="w-[45px] h-[45px]"
                 src="/images/logos/linkedinlogo.png"
               />
-            </a>
+            </a>}
+            
           </div>
         </div>
-      ): (
-        <CardSkeleton />
-      )}
     </div>
   );
 };

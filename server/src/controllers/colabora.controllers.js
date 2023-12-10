@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 const { handleUpload } = require("../helpers/cloudinary");
 const User = models.User;
 const Blog = models.Blog;
-const AdditionalInfo = models.AdditionalInfo;
+const ExtraInfo = models.ExtraInfo;
 
 exports.createUser = (req, res) => {
   const salt = bcrypt.genSaltSync(10);
@@ -17,8 +17,6 @@ exports.createUser = (req, res) => {
     password: encryptedPassword,
   };
 
-  console.log(user);
-
   User.create(user)
     .then((data) => {
       const imageId =
@@ -27,7 +25,7 @@ exports.createUser = (req, res) => {
         userId: data.userId,
         publicId: imageId,
       };
-      AdditionalInfo.create(info).catch((err) => {
+      ExtraInfo.create(info).catch((err) => {
         res.status(500).send({
           message:
             err.message ||
@@ -46,7 +44,7 @@ exports.createUser = (req, res) => {
 
 exports.findUserByPk = (req, res) => {
   const userID = req.params.id;
-  User.findByPk(userID, { include: [AdditionalInfo] })
+  User.findByPk(userID, { include: [ExtraInfo] })
     .then((data) => {
       res.send(data);
     })
@@ -81,7 +79,7 @@ exports.loginVerify = async (req, res, next) => {
 };
 
 exports.findAllUsers = (req, res) => {
-  User.findAll()
+  User.findAll({ include: [{model: ExtraInfo}] })
     .then((data) => {
       res.send(data);
     })
@@ -92,9 +90,21 @@ exports.findAllUsers = (req, res) => {
     });
 };
 
-exports.findUserAdditional = (req, res) => {
+exports.findAllTeamInfo = (req, res) => {
+  User.findAll({ include: [{model: ExtraInfo, attributes: { exclude: ["userId","createdAt","updatedAt","publicId"]}}], attributes: { exclude: ["email","password","userRole","createdAt","updatedAt"] } })
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err.message || "Some error occurred while retrieving users.",
+      });
+    });
+};
+
+exports.findUserExtra = (req, res) => {
   const id = req.params.id;
-  AdditionalInfo.findOne({ where: { userId: id } })
+  ExtraInfo.findOne({ where: { userId: id } })
     .then((data) => {
       console.log(data);
       res.send(data);
@@ -120,8 +130,8 @@ exports.findAllBlogPosts = (req, res) => {
     });
 };
 
-exports.findAllAdditional = (req, res) => {
-  AdditionalInfo.findAll()
+exports.findAllExtras = (req, res) => {
+  ExtraInfo.findAll()
     .then((data) => {
       res.send(data);
     })
@@ -132,14 +142,14 @@ exports.findAllAdditional = (req, res) => {
     });
 };
 
-exports.createAdditionalInfo = async (req, res) => {
+exports.createExtraInfo = async (req, res) => {
   const info = {
     position: req.body.position,
     github: req.body.github,
     linkedin: req.body.linkedin,
   };
 
-  await AdditionalInfo.create(info)
+  await ExtraInfo.create(info)
     .then((data) => {
       res.send(data);
     })
@@ -174,43 +184,7 @@ exports.createBlogPost = (req, res) => {
     });
 };
 
-exports.createUpload = async (req, res) => {
-  
-  if (req.file) {
-    try {
-      const b64 = Buffer.from(req.file.buffer).toString("base64");
-      let dataURI = "data:" + req.file.mimetype + ";base64," + b64;
-      var cloudinaryResponse = await handleUpload(dataURI, req.body.imageId);
-    } catch (error) {
-      console.log(error);
-      res.send({
-        message: error.message,
-      });
-    }
-  }
-
-  const info = {
-    userId: req.body.userId,
-    position: req.body.position,
-    github: `https://www.github.com/${req.body.github}`,
-    linkedin: `https://www.linkedin.com/in/${req.body.linkedin}`,
-    publicId: cloudinaryResponse.public_id,
-    secureUrl: cloudinaryResponse.secure_url,
-  };
-
-  AdditionalInfo.create(info)
-    .then((data) => {
-      console.log(data);
-      res.send(data);
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message: err.message || "Some error occurred while creating the User.",
-      });
-    });
-};
-
-exports.updateAdditionalInfo = async (req, res) => {
+exports.updateExtraInfo = async (req, res) => {
   const id = req.params.id;
   var info = req.body
   
@@ -230,24 +204,61 @@ exports.updateAdditionalInfo = async (req, res) => {
   }
 
   console.log(info);
-  AdditionalInfo.update(info, {
+  ExtraInfo.update(info, {
     where: { userId: id },
-  })
+    returning:true
+    })
     .then((data) => {
-      console.log(data);
-      if (data == 1) {
-        res.send({
-          message: "Additional info was updated successfully.",
-        });
+      console.log(data[0]);
+      if (data[0] == 1) {
+        res.send(
+          data[1]
+        );
       } else {
         res.send({
-          message: `Cannot update Additional Info with id=${id}. Maybe the User is not created or req.body is empty!`,
+          message: `Cannot update Extra info with id=${id}. Maybe the User is not created or req.body is empty!`,
         });
       }
     })
     .catch((err) => {
       res.status(500).send({
         message: "Error updating Additional Info with userId=" + id,
+      });
+    });
+};
+
+
+exports.updateUser = (req, res) => {
+  const id = req.params.id;
+  var user = req.body;
+
+  console.log(user)
+  if(user.password){
+  const salt = bcrypt.genSaltSync(10);
+  const encryptedPassword = bcrypt.hashSync(req.body.password, salt);
+  user["password"] = encryptedPassword;
+  }
+
+  console.log(user)
+  User.update(user, {
+    where: { userId: id },
+    returning:true
+    })
+    .then((data) => {
+      console.log(data[0]);
+      if (data[0] == 1) {
+        res.send(
+          data[1]
+        );
+      } else {
+        res.send({
+          message: `Cannot update User with id = ${id}. Maybe the User is not created or req.body is empty!`,
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: "Error updating User with userId = " + id,
       });
     });
 };

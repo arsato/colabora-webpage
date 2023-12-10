@@ -1,8 +1,7 @@
 const { models } = require("../models");
 const User = models.User;
 const Blog = models.Blog;
-const AdditionalInfo = models.AdditionalInfo;
-const colabora = require("../controllers/colabora.controllers");
+const ExtraInfo = models.ExtraInfo;
 
 const seedDatabase = async () => {
   const user1 = {
@@ -27,7 +26,7 @@ const seedDatabase = async () => {
       userId: data.userId,
       publicId: imageId,
     };
-    AdditionalInfo.create(info);
+    ExtraInfo.create(info);
   });
 
   await User.create(user2).then((data) => {
@@ -37,7 +36,7 @@ const seedDatabase = async () => {
       userId: data.userId,
       publicId: imageId,
     };
-    AdditionalInfo.create(info);
+    ExtraInfo.create(info);
   });
 
   await Blog.create({

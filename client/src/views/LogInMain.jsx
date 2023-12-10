@@ -33,8 +33,8 @@ const LogInMain = () => {
       if (!email || !password) return alert("Email y password obligatorias");
       const { data } = await axios.post(url + endpoint, usuarioLocal);
       localStorage.setItem("token", data.token);
-      getUserData(data.id);
-      navigate("/");
+      await getUserData(data.id);
+      navigate("/services");
     } catch (e) {
       console.log(e.response.data.error);
       setError(e.response.data.error);
@@ -95,7 +95,7 @@ const LogInMain = () => {
                 Iniciar sesión
               </button>
             ) : (
-              <LoadingButton className="hover:cursor-not-allowed text-white bg-sky-400 hover:bg-sky-500 focus:ring-4 focus:ring-blue-300 font-medium rounded-xl p-4 mt-5 text-center dark:bg-sky-400 dark:hover:bg-sky-500 dark:focus:ring-sky-500 items-center hover:scale-[1.02] ease-in-out duration-300" />
+              <LoadingButton className="hover:cursor-not-allowed text-white bg-sky-400 hover:bg-sky-500 focus:ring-4 focus:ring-blue-300 font-medium rounded-xl p-4 mt-5 text-center dark:bg-sky-400 dark:hover:bg-sky-500 dark:focus:ring-sky-500 items-center hover:scale-[1.02] ease-in-out duration-300" message={"Iniciando sesión..."} />
             )}
             <p className="text-center text-sky-400 hover:text-sky-500 font-medium text-base mt-5 hover:cursor-pointer">
               ¿Has olvidado la contraseña?

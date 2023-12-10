@@ -1,4 +1,8 @@
+import { useContext } from "react";
+import Context from "../Context";
+
 const Home = () => {
+  const { usuario, setUsuario: setUsuarioGlobal } = useContext(Context);
   return (
     <main className="">
       <div className="container mx-auto">

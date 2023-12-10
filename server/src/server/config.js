@@ -1,4 +1,3 @@
-const path = require("path");
 const multer = require("multer");
 const express = require("express");
 const routes = require("../routes/colabora.routes");

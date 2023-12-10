@@ -1,11 +1,15 @@
-const getAdditionalInfoModel = (sequelize, { DataTypes }) => {
-    const AdditionalInfo = sequelize.define("additional_info", {
-      additionalInfoId: {
-        field: "additional_info_id",
+const getExtraInfoModel = (sequelize, { DataTypes }) => {
+    const ExtraInfo = sequelize.define("extra_info", {
+      extraInfoId: {
+        field: "extra_info_id",
         type: DataTypes.INTEGER,
         allowNull: false,
         primaryKey: true,
         autoIncrement: true,
+      },
+      description: {
+        type: DataTypes.TEXT,
+        allowNull: true,
       },
       position: {
         type: DataTypes.STRING,
@@ -31,8 +35,8 @@ const getAdditionalInfoModel = (sequelize, { DataTypes }) => {
       }
     });
   
-    return AdditionalInfo;
+    return ExtraInfo;
   };
   
-  module.exports = getAdditionalInfoModel;
+  module.exports = getExtraInfoModel;
   
